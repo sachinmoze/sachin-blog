@@ -14,11 +14,11 @@ from flask_gravatar import Gravatar
 from functools import wraps
 import os
 import smtplib
-my_email = os.environ['EMAIL']
-password = os.environ['PASSWORD']
-to_admin = os.environ['admin']
+my_email = os.environ.get("EMAIL")
+password = os.environ.get('PASSWORD')
+to_admin = os.environ.get('admin')
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KET")
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
