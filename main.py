@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -12,7 +12,11 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 
 from functools import wraps
-
+import os
+import smtplib
+my_email = os.environ['EMAIL']
+password = os.environ['PASSWORD']
+to_admin = os.environ['admin']
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
@@ -70,6 +74,13 @@ class Comment(db.Model):
     parent_post = relationship("BlogPost", back_populates="comments")
 
 db.create_all()
+
+def send_email(name, email, phone, message):
+    email_message = f"Subject:New Message From Blog\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
+    with smtplib.SMTP("smtp.gmail.com", 587, timeout=120) as connection:
+        connection.starttls()
+        connection.login(my_email, password)
+        connection.sendmail(my_email, to_admin, email_message)
 
 def admin_only(f):
     @wraps(f)
@@ -163,8 +174,12 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/contact")
+@app.route("/contact",methods=['GET','post'])
 def contact():
+    if request.method == 'POST':
+        data = request.form
+        send_email(data["name"], data["email"], data["phone"], data["message"])
+        return render_template("contact.html", msg_sent=True)
     return render_template("contact.html")
 
 
