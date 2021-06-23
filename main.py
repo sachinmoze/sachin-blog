@@ -23,7 +23,7 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///blog.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -76,6 +76,7 @@ class Comment(db.Model):
 db.create_all()
 
 def send_email(name, email, phone, message):
+    #https://accounts.google.com/DisplayUnlockCaptcha
     email_message = f"Subject:New Message From Blog\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
     with smtplib.SMTP("smtp.gmail.com", 587, timeout=120) as connection:
         connection.starttls()
@@ -222,7 +223,7 @@ def edit_post(post_id):
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
-    return render_template("make-post.html", form=edit_form)
+    return render_template("make-post.html", form=edit_form, is_edit= True)
 
 
 @app.route("/delete/<int:post_id>")
