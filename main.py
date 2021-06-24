@@ -234,7 +234,55 @@ def delete_post(post_id):
     db.session.commit()
     return redirect(url_for('get_all_posts'))
 
+@app.route('/user')
+@login_required
+def user_info():
+    user_id=int(request.args.get('id'))
+    user_name= request.args.get('name')
+    if user_id != current_user.id:
+        return abort(403)
+    else:
+        user = User.query.get(user_id)
+        return render_template('user_info.html', user=user)
+
+@app.route('/edit-details/<int:id>', methods=['GET','POST'])
+@login_required
+def edit_user(id):
+    if id != current_user.id:
+        return abort(403)
+    else:
+        user = User.query.get(id)
+        edit_user = RegisterForm(
+            name=user.name,
+            email=user.email,
+            password=user.password)
+        if edit_user.validate_on_submit():
+            if not check_password_hash(user.password, edit_user.password.data):
+                flash('Password does not match, Please try again!')
+            else:
+                user.name = edit_user.name.data
+                user.email = edit_user.email.data
+                db.session.commit()
+                flash('Details saved successfully.!')
+                return redirect(url_for("user_info", id=current_user.id))
+        return render_template('user_info.html', form=edit_user, is_edit= True)
+
+@app.route('/user-profiles')
+@admin_only
+@login_required
+def profiles():
+    users = User.query.all()
+    return render_template('admin-page.html', users=users)
+
+@app.route('/delete-user/<int:user_id>')
+@admin_only
+@login_required
+def delete_user(user_id):
+    user_to_delete = User.query.get(user_id)
+    db.session.delete(user_to_delete)
+    db.session.commit()
+    return redirect(url_for('profiles'))
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
-    #app.run(debug=True)
+    #app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)

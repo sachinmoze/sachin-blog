@@ -1,0 +1,64 @@
+{% include "header.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url({{ url_for('static', filename='img/profile.jpg')}})">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <h1>Welcome {{current_user.name}}!</h1>
+<!--                    <span class="meta">Wants to contribute on blogs ? <a href="{{url_for('contact')}}">Contact me!</a></span>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto col-sm-12">
+<!--                {% for user in users %}-->
+
+<!--                <p><span class="meta">{{user.id}}.</span> Name: {{user.name}}-->
+<!--                    <span class="meta" style="text-align:left;">        ✘</span></p>-->
+<!--                <p>Email: {{user.email}}</p>-->
+<!--                <hr>-->
+<!--                {% endfor %}-->
+
+                <table class="table table-hover table-dark">
+
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Delete</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for user in users[1:] %}
+                <tr>
+                        <td>{{user.id}}</td>
+                        <td>{{user.name}}</td>
+                        <td>{{user.email}}</td>
+                    <td><a href="{{url_for('delete_user', user_id=user.id) }}">✘</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+{% include "footer.html" %}

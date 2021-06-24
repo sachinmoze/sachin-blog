@@ -1,0 +1,53 @@
+{% include "header.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url({{ url_for('static', filename='img/profile.jpg')}})">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <h1>Welcome {{current_user.name}}!</h1>
+                    <span class="meta">Wants to contribute on blogs ? <a href="{{url_for('contact')}}">Contact me!</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+
+                    {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                            {% for message in messages %}
+                            <p>{{ message }}</p>
+                            {% endfor %}
+                            {% endif %}
+                    {% endwith %}
+                {% if not is_edit: %}
+
+                <p>Name: {{user.name}}</p>
+                <p>Email: {{user.email}}</p>
+                <p>password: *******</p>
+                <hr>
+                <div class="clearfix">
+                    <a class="btn btn-primary float-right" href="{{url_for('edit_user', id=user.id, name=user.name)}}">Edit Details</a>
+                </div>
+
+                {% else: %}
+                            {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+{% include "footer.html" %}
